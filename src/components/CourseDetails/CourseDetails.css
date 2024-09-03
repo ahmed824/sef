@@ -10,7 +10,7 @@
 
 i.fa-regular.fa-newspaper,
 i.fa-solid.fa-chart-simple {
-    font-size: 26px;
+    font-size: 22px;
     color: #BF9B30;
 }
 
@@ -31,7 +31,7 @@ button.btn.btn-warning:hover {
 
 .def {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     gap: 8px;
 }
 

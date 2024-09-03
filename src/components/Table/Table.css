@@ -89,6 +89,10 @@
     cursor: pointer;
 }
 
+.course-actions a {
+    text-decoration: none !important;
+}
+
 .pagination {
     display: flex;
     align-items: center;
@@ -180,6 +184,17 @@ button.btn.button-link {
 .date {
     display: none;
 }
+
+.page-number.active {
+    /* background-color: #007bff; */
+    color: white;
+}
+
+.pagination-arrow:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 
 /* Mobile Specific Styling */
 @media (max-width: 767px) {

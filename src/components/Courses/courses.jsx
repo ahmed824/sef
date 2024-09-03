@@ -1,20 +1,18 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import './Courses.css'; // Import your CSS file
+import './Courses.css';
 import { Link } from "react-router-dom";
 import Table from "../Table/table";
+import useCourses from "./useCourses";
+import { useUpdateCourse } from "./useUpdateCourse";
 
-const Courses = () => {
-    const courses = [
-        { title: 'Python for Beginners', instructor: 'Mohammed Nour', date: 'Wednesday, June 7th', lessons: '12 lessons' },
-        { title: 'JavaScript Essentials', instructor: 'Jane Doe', date: 'Thursday, July 15th', lessons: '8 lessons' },
-        { title: 'React for Beginners', instructor: 'John Smith', date: 'Monday, August 23rd', lessons: '10 lessons' },
-        { title: 'Advanced CSS', instructor: 'Emily Davis', date: 'Friday, September 10th', lessons: '15 lessons' },
-        { title: 'Node.js Fundamentals', instructor: 'Michael Brown', date: 'Saturday, October 5th', lessons: '11 lessons' },
-        { title: 'Database Design', instructor: 'Sarah Wilson', date: 'Tuesday, November 12th', lessons: '14 lessons' },
-    ];
+const Courses = ({ role }) => {
+    const { courses, isLoading, error } = useCourses();
+    const { updateCourse, isUpdating } = useUpdateCourse(); // Use the hook
+
+    const [enrolledCourses, setEnrolledCourses] = useState([]);
 
     let sliderRef = useRef(null);
 
@@ -27,10 +25,8 @@ const Courses = () => {
     };
 
     const settings = {
-        // dots: true,
         infinite: true,
         speed: 500,
-
         slidesToShow: 4,
         slidesToScroll: 1,
         responsive: [
@@ -42,6 +38,22 @@ const Courses = () => {
             },
         ],
     };
+
+    const handleEnroll = (courseId) => {
+        updateCourse(courseId, {
+            onSuccess: () => {
+                setEnrolledCourses((prev) => [...prev, courseId]);
+            },
+        });
+    };
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
+
+    if (error) {
+        return <div>Error loading courses: {error.message}</div>;
+    }
 
     return (
         <div>
@@ -69,12 +81,12 @@ const Courses = () => {
                         ref={(slider) => { sliderRef = slider; }}
                         {...settings}
                     >
-                        {courses.map((course, index) => (
-                            <div className="course-slide" key={index}>
+                        {courses.map((course) => (
+                            <div className="course-slide" key={course.id} role={role} course={course} students={20}>
                                 <div className="card text-light">
                                     <div className="card-img-wrap position-relative">
                                         <img
-                                            src="https://via.placeholder.com/150"
+                                            src={course.image}
                                             alt="Course"
                                             className="card-img-top"
                                         />
@@ -85,11 +97,22 @@ const Courses = () => {
                                     </div>
                                     <div className="card-body">
                                         <p className="card-text">
-                                            <span><i className="fa-solid fa-calendar-days"></i> {course.date}</span><br />
-                                            <span><i className="fa-regular fa-newspaper"></i> {course.lessons}</span>
+                                            <span><i className="fa-solid fa-calendar-days cale"></i> {new Date(course.publishedOn).toLocaleDateString()}</span><br />
+                                            <span><i className="fa-regular fa-newspaper"></i> {course.duration}</span>
                                         </p>
-                                        <button className="btn button-warning mb-2">ENROLL</button>
-                                        <Link to="/courseDetails">
+                                        <p className="card-text">
+                                            {role === 'admin' && (
+                                                <span>Students enrolled: {20}</span>
+                                            )}
+                                        </p>
+                                        <button
+                                            className="btn button-warning mb-2"
+                                            onClick={() => handleEnroll(course.id)}
+                                            disabled={isUpdating || enrolledCourses.includes(course.id)}
+                                        >
+                                            {enrolledCourses.includes(course.id) ? "Enrolled" : "ENROLL"}
+                                        </button>
+                                        <Link to={`/courseDetails/${course.id}`}>
                                             <button className="btn button-link w-100 p-0 text-light">View Details <i className="fa-solid fa-chevron-right "></i></button>
                                         </Link>
                                     </div>
@@ -97,7 +120,6 @@ const Courses = () => {
                             </div>
                         ))}
                     </Slider>
-
                 </div>
                 <Table />
             </div>

@@ -142,6 +142,8 @@ button.slick-arrow.slick-next {
     text-decoration: none !important;
 }
 
-i.fa-solid.fa-calendar-days {
-    font-size: 26px;
+.cale{
+    font-size: 22px;
+    margin-right: 4px;
+    margin-left: 4px;
 }
